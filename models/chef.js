@@ -36,7 +36,11 @@ module.exports = function (sequelize, DataTypes) {
         }
        })
 
-    };
+       Chef.hasMany(models.OnlineChef);       
+       Chef.hasMany(models.History);
+       Chef.hasMany(models.Review);
+       Chef.hasMany(models.Menu);
 
+    };
     return Chef;
 };
