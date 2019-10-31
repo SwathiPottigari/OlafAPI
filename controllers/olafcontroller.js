@@ -1,6 +1,8 @@
 let express = require("express");
 let router = express.Router();
 var db = require("../models");
+const bcrypt = require('bcrypt');
+
 
 router.post("/api/signup", function (req, res) {
     // console.log("-----Request----------");
@@ -13,7 +15,7 @@ router.post("/api/signup", function (req, res) {
         if (dbResult === null) {
             db.User.create({
                 password: req.body.password,
-                email:req.body.email
+                email: req.body.email
             }).then(function (userResults) {
                 if (req.body.user === "chef") {
                     createChef(req, res, userResults);
@@ -26,7 +28,27 @@ router.post("/api/signup", function (req, res) {
     }).catch(function (error) { console.log(error); });
 });
 
-
+router.get("/api/login", function (req, res) {
+    console.log("-------Request-------");
+    console.log(req.body);
+    db.User.findOne({
+        where: {
+            email: req.body.email
+        }
+    }).then(function (dbUser) {
+        //compares password send in req.body to one in database, will return true if matched.
+        if (bcrypt.compareSync(req.body.password, dbUser.password)) {
+            //create new session property "user", set equal to logged in user
+            req.session.user = { id: dbUser.dataValues.id };
+            req.session.error = null;
+        }
+        else {
+            req.session.user = false;
+            req.session.error = 'auth failed bro'
+        }
+        res.json(req.session);
+    }).catch();
+});
 
 function createChef(req, res, userResults) {
     db.Chef.create({
@@ -54,7 +76,7 @@ function createCustomer(req, res, userResults) {
         email: req.body.email,
         contact: req.body.contact,
         UserId: userResults.dataValues.id
-    }).then(function(custResult){
+    }).then(function (custResult) {
         req.session.user = { id: userResults.dataValues.id };
         req.session.error = null;
         res.status(200).json(req.session);
