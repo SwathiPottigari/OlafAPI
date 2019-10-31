@@ -29,8 +29,6 @@ router.post("/api/signup", function (req, res) {
 });
 
 router.get("/api/login", function (req, res) {
-    console.log("-------Request-------");
-    console.log(req.body);
     db.User.findOne({
         where: {
             email: req.body.email
@@ -47,6 +45,38 @@ router.get("/api/login", function (req, res) {
             req.session.error = 'auth failed bro'
         }
         res.json(req.session);
+    }).catch();
+});
+
+router.post("/api/createMenu", function (req, res) {
+    // console.log("-------Request--------")     ;
+    // console.log(req.body);    
+    db.Menu.create({
+        dish: req.body.dish,
+        quantity: req.body.quantity,
+        servingSize: req.body.servingSize,
+        price: req.body.price,
+        ingredients: req.body.ingredients,
+        cuisine: req.body.cuisine,
+        ChefId: req.body.ChefId
+    }).then(function (menuResult) {
+        db.History.create({
+            dish: req.body.dish,
+            ingredients: req.body.ingredients,
+            cuisine: req.body.cuisine,
+            ChefId: req.body.ChefId
+        }).then(function(result){
+
+        }).catch();
+        res.json(menuResult);
+    }).catch(function (error) { res.json(error) });
+
+});
+
+
+router.get("/api/onlineChefs", function (req, res) {
+    db.Chef.findAll({}).then(function (results) {
+        res.json(results);
     }).catch();
 });
 
