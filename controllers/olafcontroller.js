@@ -65,7 +65,7 @@ router.post("/api/createMenu", function (req, res) {
             ingredients: req.body.ingredients,
             cuisine: req.body.cuisine,
             ChefId: req.body.ChefId
-        }).then(function(result){
+        }).then(function (result) {
 
         }).catch();
         res.json(menuResult);
@@ -74,28 +74,60 @@ router.post("/api/createMenu", function (req, res) {
 });
 
 
-router.get("/api/menuList/:chefId",function(req,res){
+router.get("/api/menuList/:chefId", function (req, res) {
+    let today = new Date();
+    let date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
     db.Menu.findAll({
-        where:{
-            ChefId:req.params.chefId
+        where: {
+            ChefId: req.params.chefId
         }
-    }).then(function(menuResult){
-        let menuList=[];
+    }).then(function (menuResult) {
+        let menuList = [];
         menuResult.forEach(element => {
             menuList.push(element.dataValues);
         });
         res.json(menuList);
-    }).catch(function(error){
+    }).catch(function (error) {
         res.json(error);
     });
 });
 
 router.get("/api/onlineChefs", function (req, res) {
     db.OnlineChef.findAll({
-        include:[db.Chef]
+        include: [db.Chef]
     }).then(function (results) {
         res.json(results);
     }).catch();
+});
+
+router.post("/api/makeAvailable/:chefId", function (req, res) {
+    db.OnlineChef.create({
+        ChefId: req.params.chefId
+    }).then(function (result) {
+        res.json(result);
+    }).catch(function (error) { res.json(error) });
+});
+
+router.delete("/api/makeUnavailable/:chefId", function (req, res) {
+    db.OnlineChef.destroy({
+        where: {
+            ChefId: req.params.chefId
+        }
+    }).then(function (result) {
+        res.json(result);
+    }).catch(function (error) { res.json(error) });
+});
+
+router.delete("/api/removeDish/:dishId", function (req, res) {
+    db.Menu.destroy({
+        where: {
+            id: req.params.dishId
+        }
+    }).then(function (result) {
+        res.json(result);
+    }).catch(function (error) {
+        res.json(error);
+    });
 });
 
 function createChef(req, res, userResults) {
