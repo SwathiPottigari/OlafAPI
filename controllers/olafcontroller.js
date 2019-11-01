@@ -100,22 +100,34 @@ router.get("/api/onlineChefs", function (req, res) {
     }).catch();
 });
 
-router.post("/api/makeAvailable/:chefId",function(req,res){
+router.post("/api/makeAvailable/:chefId", function (req, res) {
     db.OnlineChef.create({
-        ChefId:req.params.chefId
-    }).then(function(result){
+        ChefId: req.params.chefId
+    }).then(function (result) {
         res.json(result);
-    }).catch(function(error){res.json(error)});
+    }).catch(function (error) { res.json(error) });
 });
 
-router.delete("/api/makeUnavailable/:chefId",function(req,res){
+router.delete("/api/makeUnavailable/:chefId", function (req, res) {
     db.OnlineChef.destroy({
-        where:{
-            ChefId:req.params.chefId
-        }        
-    }).then(function(result){
+        where: {
+            ChefId: req.params.chefId
+        }
+    }).then(function (result) {
         res.json(result);
-    }).catch(function(error){res.json(error)});
+    }).catch(function (error) { res.json(error) });
+});
+
+router.delete("/api/removeDish/:dishId", function (req, res) {
+    db.Menu.destroy({
+        where: {
+            id: req.params.dishId
+        }
+    }).then(function (result) {
+        res.json(result);
+    }).catch(function (error) {
+        res.json(error);
+    });
 });
 
 function createChef(req, res, userResults) {
