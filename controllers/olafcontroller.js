@@ -28,7 +28,21 @@ router.post("/api/signup", function (req, res) {
     }).catch(function (error) { console.log(error); });
 });
 
-router.get("/api/login", function (req, res) {
+
+router.get('/api/logout', function (req, res) {
+    //delete session user, logging you out
+    req.session.destroy(function () {
+        res.send('successfully logged out')
+    })
+})
+
+//developer route to see all the session variables.
+router.get('/api/readsessions', function (req, res) {
+    res.json(req.session);
+})
+
+router.post("/api/login", function (req, res) {
+    console.log(req.body);
     db.User.findOne({
         where: {
             email: req.body.email
