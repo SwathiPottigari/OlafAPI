@@ -74,8 +74,26 @@ router.post("/api/createMenu", function (req, res) {
 });
 
 
+router.get("/api/menuList/:chefId",function(req,res){
+    db.Menu.findAll({
+        where:{
+            ChefId:req.params.chefId
+        }
+    }).then(function(menuResult){
+        let menuList=[];
+        menuResult.forEach(element => {
+            menuList.push(element.dataValues);
+        });
+        res.json(menuList);
+    }).catch(function(error){
+        res.json(error);
+    });
+});
+
 router.get("/api/onlineChefs", function (req, res) {
-    db.Chef.findAll({}).then(function (results) {
+    db.OnlineChef.findAll({
+        include:[db.Chef]
+    }).then(function (results) {
         res.json(results);
     }).catch();
 });
