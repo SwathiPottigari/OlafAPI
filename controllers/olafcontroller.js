@@ -2,7 +2,15 @@ let express = require("express");
 let router = express.Router();
 var db = require("../models");
 const bcrypt = require('bcrypt');
+var NodeGeocoder = require('node-geocoder');
 
+var options = {
+    provider: 'google',
+    httpAdapter: 'https',
+    apiKey: process.env.GOOGLE_APIKEY,
+    formatter: null
+};
+var geocoder = NodeGeocoder(options);
 
 router.post("/api/signup", function (req, res) {
     // console.log("-----Request----------");
@@ -144,8 +152,14 @@ router.delete("/api/removeDish/:dishId", function (req, res) {
     });
 });
 
-function createChef(req, res, userResults) {
-    db.Chef.create({
+function createChef(req, response, userResults) {
+    let lat;let lon;
+    geocoder.geocode(req.body.address)
+    .then(function(res) {
+      lat=res[0].latitude;
+      lon=res[0].longitude;
+
+      db.Chef.create({
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         email: req.body.email,
@@ -154,12 +168,19 @@ function createChef(req, res, userResults) {
         kitchenName: req.body.kitchenName,
         license: req.body.license,
         address: req.body.address,
+        lat:lat,
+        lng:lon,
         UserId: userResults.dataValues.id
     }).then(function (chefResult) {
         req.session.user = { id: userResults.dataValues.id };
         req.session.error = null;
-        res.status(200).json(req.session);
+        response.status(200).json(req.session);
     }).catch(function (error) { console.log(error) });
+    })
+    .catch(function(err) {
+      console.log(err);
+    });
+    
 };
 
 
