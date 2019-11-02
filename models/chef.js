@@ -26,7 +26,14 @@ module.exports = function (sequelize, DataTypes) {
         },
         address: {
             type: DataTypes.TEXT
+        },
+        lat:{
+            type:DataTypes.DOUBLE
+        },
+        lng:{
+            type:DataTypes.DOUBLE
         }
+
     });
 
     Chef.associate=function(models){
