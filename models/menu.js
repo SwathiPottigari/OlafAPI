@@ -6,7 +6,7 @@ module.exports=function(sequelize,DataTypes){
         quantity:{
             type:DataTypes.INTEGER
         },
-        servingSize:{
+        servingUnit:{
             type:DataTypes.STRING
         },
         price:{
@@ -16,6 +16,9 @@ module.exports=function(sequelize,DataTypes){
             type:DataTypes.TEXT
         },
         cuisine:{
+            type:DataTypes.STRING
+        },
+        description:{
             type:DataTypes.STRING
         }
     });
