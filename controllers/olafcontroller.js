@@ -105,6 +105,7 @@ router.get("/api/menuList/:chefId", function (req, res) {
         }
     }).then(function (menuResult) {
         let menuList = [];
+
         menuResult.forEach(element => {
             menuList.push(element.dataValues);
         });
@@ -118,6 +119,12 @@ router.get("/api/onlineChefs", function (req, res) {
     db.OnlineChef.findAll({
         include: [db.Chef]
     }).then(function (results) {
+        res.json(results);
+    }).catch();
+});
+
+router.get("/api/Chefs", function (req, res) {
+    db.Chef.findAll().then(function (results) {
         res.json(results);
     }).catch();
 });
