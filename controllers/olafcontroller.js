@@ -100,10 +100,10 @@ router.post("/api/order", function (req, res) {
     console.log("-------Request--------")     ;
     console.log(req.body);    
     db.Order.create({
-        orderedQuantity:req.body.quantity,
-        MenuId:req.body.currentMenuItemId,
-        ChefId:req.body.currentChefId,
-        CustomerId:req.body.currentCustomerId
+        orderedQuantity:parseInt(req.body.orderedQuantity),
+        MenuId:req.body.MenuId,
+        ChefId:req.body.ChefId,
+        CustomerId:req.body.CustomerId
     }).then(function(response){
         res.json(response)
     }).catch()
