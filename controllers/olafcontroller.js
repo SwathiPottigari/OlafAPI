@@ -136,6 +136,18 @@ router.get("/api/onlineChefs", function (req, res) {
     }).catch();
 });
 
+/* New Addition  */
+router.get("/api/customer/:userId", function (req, res) {
+    db.Customer.findAll({
+        where:{
+            UserId:req.params.userId
+        } 
+        }).then (function(results){
+            res.json(results);
+        }).catch();
+    })
+
+
 router.get("/api/Chefs", function (req, res) {
     db.Chef.findAll().then(function (results) {
         res.json(results);
