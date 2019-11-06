@@ -20,6 +20,9 @@ module.exports=function(sequelize,DataTypes){
         },
         description:{
             type:DataTypes.STRING
+        },
+        imageURL:{
+            type:DataTypes.STRING
         }
     });
 
