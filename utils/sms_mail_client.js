@@ -15,8 +15,8 @@ const oauth2Client = new OAuth2(
 oauth2Client.setCredentials({
     refresh_token: process.env.OAUTH_REFRESH_TOKEN
 });
-const accessToken = oauth2Client.getAccessToken(); 
 
+const accessToken = oauth2Client.getAccessToken(); 
 var accountSid = process.env.TWILIO_SID; // Your Account SID from www.twilio.com/console
 var authToken = process.env.TWILIO_AUTH_TOKEN;   // Your Auth Token from www.twilio.com/console
 console.log("I M... ",accountSid);
