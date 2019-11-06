@@ -81,7 +81,8 @@ router.post("/api/createMenu", function (req, res) {
         ingredients: req.body.ingredients,
         cuisine: req.body.cuisine,
         ChefId: req.body.ChefId,
-        description:req.body.description
+        description:req.body.description,
+        imageURL:req.body.imageURL
     }).then(function (menuResult) {
         db.History.create({
             dish: req.body.dish,
