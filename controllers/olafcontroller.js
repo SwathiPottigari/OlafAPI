@@ -71,8 +71,8 @@ router.post("/api/login", function (req, res) {
 });
 
 router.post("/api/createMenu", function (req, res) {
-    // console.log("-------Request--------")     ;
-    // console.log(req.body);    
+    console.log("-------Request--------")     ;
+    console.log(req.body);    
     db.Menu.create({
         dish: req.body.dish,
         quantity: req.body.quantity,
@@ -96,6 +96,18 @@ router.post("/api/createMenu", function (req, res) {
 
 });
 
+router.post("/api/order", function (req, res) {
+    console.log("-------Request--------")     ;
+    console.log(req.body);    
+    db.Order.create({
+        orderedQuantity:req.body.quantity,
+        MenuId:req.body.currentMenuItemId,
+        ChefId:req.body.currentChefId,
+        CustomerId:req.body.currentCustomerId
+    }).then(function(response){
+        res.json(response)
+    }).catch()
+});
 
 router.get("/api/menuList/:chefId", function (req, res) {
     let today = new Date();
@@ -106,6 +118,7 @@ router.get("/api/menuList/:chefId", function (req, res) {
         }
     }).then(function (menuResult) {
         let menuList = [];
+
         menuResult.forEach(element => {
             menuList.push(element.dataValues);
         });
@@ -119,6 +132,12 @@ router.get("/api/onlineChefs", function (req, res) {
     db.OnlineChef.findAll({
         include: [db.Chef]
     }).then(function (results) {
+        res.json(results);
+    }).catch();
+});
+
+router.get("/api/Chefs", function (req, res) {
+    db.Chef.findAll().then(function (results) {
         res.json(results);
     }).catch();
 });
