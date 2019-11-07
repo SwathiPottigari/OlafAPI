@@ -113,6 +113,7 @@ router.post("/api/order", function (req, res) {
 router.get("/api/menuList/:chefId", function (req, res) {
     let today = new Date();
     let date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+    console.log(date);
     db.Menu.findAll({
         where: {
             ChefId: req.params.chefId
@@ -136,6 +137,17 @@ router.get("/api/onlineChefs", function (req, res) {
         res.json(results);
     }).catch();
 });
+
+router.get("/api/onlineChef/:id", function (req, res) {
+    db.OnlineChef.findAll({
+        where:{
+            ChefId:req.params.id
+        }
+    }).then(function (results) {
+        res.json(results);
+    }).catch();
+});
+
 
 /* New Addition  */
 router.get("/api/customer/:userId", function (req, res) {
