@@ -33,6 +33,10 @@ router.post("/api/signup", function (req, res) {
                 }
             }).catch();
         }
+        else
+        {
+            res.json({isSuccess:false});
+        }
     }).catch(function (error) { console.log(error); });
 });
 
@@ -56,7 +60,12 @@ router.post("/api/login", function (req, res) {
             email: req.body.email
         }
     }).then(function (dbUser) {
-        //compares password send in req.body to one in database, will return true if matched.
+        if(dbUser===null)
+        {
+    res.json({isSuccess:false});
+        }
+        else{
+            //compares password send in req.body to one in database, will return true if matched.
         if (bcrypt.compareSync(req.body.password, dbUser.password)) {
             //create new session property "user", set equal to logged in user
             req.session.user = { id: dbUser.dataValues.id };
@@ -67,6 +76,8 @@ router.post("/api/login", function (req, res) {
             req.session.error = 'auth failed bro'
         }
         res.json(req.session);
+        }
+        
     }).catch();
 });
 
