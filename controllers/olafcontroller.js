@@ -150,15 +150,28 @@ router.get("/api/onlineChef/:id", function (req, res) {
 
 
 /* New Addition  */
-router.get("/api/customer/:userId", function (req, res) {
-    db.Customer.findAll({
-        where:{
-            UserId:req.params.userId
-        } 
-        }).then (function(results){
-            res.json(results);
-        }).catch();
-    })
+router.get("/api/user/:userId/:user", function (req, res) {
+    if (req.params.user === "chef"){
+        db.Chef.findAll({
+            where:{
+                UserId:req.params.userId
+            } 
+            }).then (function(results){
+                res.json(results);
+            }).catch();
+    }
+    else{
+
+        db.Customer.findAll({
+            where:{
+                UserId:req.params.userId
+            } 
+            }).then (function(results){
+                res.json(results);
+            }).catch();
+    }
+    }
+    )
 
 
 router.get("/api/Chefs", function (req, res) {
