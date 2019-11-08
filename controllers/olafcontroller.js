@@ -33,9 +33,8 @@ router.post("/api/signup", function (req, res) {
                 }
             }).catch();
         }
-        else
-        {
-            res.json({isSuccess:false});
+        else {
+            res.json({ isSuccess: false });
         }
     }).catch(function (error) { console.log(error); });
 });
@@ -60,30 +59,29 @@ router.post("/api/login", function (req, res) {
             email: req.body.email
         }
     }).then(function (dbUser) {
-        if(dbUser===null)
-        {
-    res.json({isSuccess:false});
-        }
-        else{
-            //compares password send in req.body to one in database, will return true if matched.
-        if (bcrypt.compareSync(req.body.password, dbUser.password)) {
-            //create new session property "user", set equal to logged in user
-            req.session.user = { id: dbUser.dataValues.id };
-            req.session.error = null;
+        if (dbUser === null) {
+            res.json({ isSuccess: false });
         }
         else {
-            req.session.user = false;
-            req.session.error = 'auth failed bro'
+            //compares password send in req.body to one in database, will return true if matched.
+            if (bcrypt.compareSync(req.body.password, dbUser.password)) {
+                //create new session property "user", set equal to logged in user
+                req.session.user = { id: dbUser.dataValues.id };
+                req.session.error = null;
+            }
+            else {
+                req.session.user = false;
+                req.session.error = 'auth failed bro'
+            }
+            res.json(req.session);
         }
-        res.json(req.session);
-        }
-        
+
     }).catch();
 });
 
 router.post("/api/createMenu", function (req, res) {
-    console.log("-------Request--------")     ;
-    console.log(req.body);    
+    console.log("-------Request--------");
+    console.log(req.body);
     db.Menu.create({
         dish: req.body.dish,
         quantity: req.body.quantity,
@@ -92,8 +90,8 @@ router.post("/api/createMenu", function (req, res) {
         ingredients: req.body.ingredients,
         cuisine: req.body.cuisine,
         ChefId: req.body.ChefId,
-        description:req.body.description,
-        imageURL:req.body.imageURL
+        description: req.body.description,
+        imageURL: req.body.imageURL
     }).then(function (menuResult) {
         db.History.create({
             dish: req.body.dish,
@@ -109,16 +107,24 @@ router.post("/api/createMenu", function (req, res) {
 });
 
 router.post("/api/order", function (req, res) {
-    console.log("-------Request--------")     ;
-    console.log(req.body);    
-    db.Order.create({
-        orderedQuantity:req.body.quantity,
-        MenuId:req.body.currentMenuItemId,
-        ChefId:req.body.currentChefId,
-        CustomerId:req.body.currentCustomerId
-    }).then(function(response){
-        res.json(response)
-    }).catch()
+    console.log("-------Request--------");
+    console.log(req.body);
+    let ordersArray = [];
+    for (let i = 0; i < req.body.data.length; i++) {
+        let resObj = {
+            orderedQuantity: req.body.data[i].orderedQuantity,
+            CustomerId: req.body.data[i].CustomerId,
+            MenuId: req.body.data[i].MenuId,
+            ChefId: req.body.data[i].ChefId
+        }
+        ordersArray.push(resObj);
+    }
+    db.Order.bulkCreate(ordersArray).then(function (response) {
+        console.log("Done");
+        res.json(response);
+    }).catch(function (error) {
+        console.log(error);
+    })
 });
 
 router.get("/api/menuList/:chefId", function (req, res) {
@@ -151,8 +157,8 @@ router.get("/api/onlineChefs", function (req, res) {
 
 router.get("/api/onlineChef/:id", function (req, res) {
     db.OnlineChef.findAll({
-        where:{
-            ChefId:req.params.id
+        where: {
+            ChefId: req.params.id
         }
     }).then(function (results) {
         res.json(results);
@@ -162,27 +168,27 @@ router.get("/api/onlineChef/:id", function (req, res) {
 
 /* New Addition  */
 router.get("/api/user/:userId/:user", function (req, res) {
-    if (req.params.user === "chef"){
+    if (req.params.user === "chef") {
         db.Chef.findAll({
-            where:{
-                UserId:req.params.userId
-            } 
-            }).then (function(results){
-                res.json(results);
-            }).catch();
+            where: {
+                UserId: req.params.userId
+            }
+        }).then(function (results) {
+            res.json(results);
+        }).catch();
     }
-    else{
+    else {
 
         db.Customer.findAll({
-            where:{
-                UserId:req.params.userId
-            } 
-            }).then (function(results){
-                res.json(results);
-            }).catch();
+            where: {
+                UserId: req.params.userId
+            }
+        }).then(function (results) {
+            res.json(results);
+        }).catch();
     }
-    }
-    )
+}
+)
 
 
 router.get("/api/Chefs", function (req, res) {
@@ -222,34 +228,34 @@ router.delete("/api/removeDish/:dishId", function (req, res) {
 });
 
 function createChef(req, response, userResults) {
-    let lat;let lon;
+    let lat; let lon;
     geocoder.geocode(req.body.address)
-    .then(function(res) {
-      lat=res[0].latitude;
-      lon=res[0].longitude;
+        .then(function (res) {
+            lat = res[0].latitude;
+            lon = res[0].longitude;
 
-      db.Chef.create({
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        email: req.body.email,
-        specialities: req.body.specialities,
-        contact: req.body.contact,
-        kitchenName: req.body.kitchenName,
-        license: req.body.license,
-        address: req.body.address,
-        lat:lat,
-        lng:lon,
-        UserId: userResults.dataValues.id
-    }).then(function (chefResult) {
-        req.session.user = { id: userResults.dataValues.id };
-        req.session.error = null;
-        response.status(200).json(req.session);
-    }).catch(function (error) { console.log(error) });
-    })
-    .catch(function(err) {
-      console.log(err);
-    });
-    
+            db.Chef.create({
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
+                email: req.body.email,
+                specialities: req.body.specialities,
+                contact: req.body.contact,
+                kitchenName: req.body.kitchenName,
+                license: req.body.license,
+                address: req.body.address,
+                lat: lat,
+                lng: lon,
+                UserId: userResults.dataValues.id
+            }).then(function (chefResult) {
+                req.session.user = { id: userResults.dataValues.id };
+                req.session.error = null;
+                response.status(200).json(req.session);
+            }).catch(function (error) { console.log(error) });
+        })
+        .catch(function (err) {
+            console.log(err);
+        });
+
 };
 
 
