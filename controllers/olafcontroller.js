@@ -110,12 +110,13 @@ router.post("/api/order", function (req, res) {
     console.log("-------Request--------");
     console.log(req.body);
     let ordersArray = [];
-    for (let i = 0; i < req.body.data.length; i++) {
+    
+    for (let i = 0; i < req.body.data.cartItems.length; i++) {
         let resObj = {
-            orderedQuantity: req.body.data[i].orderedQuantity,
-            CustomerId: req.body.data[i].CustomerId,
-            MenuId: req.body.data[i].MenuId,
-            ChefId: req.body.data[i].ChefId
+            orderedQuantity: req.body.data.cartItems[i].orderedQuantity,
+            CustomerId: req.body.data.cartItems[i].CustomerId,
+            MenuId: req.body.data.cartItems[i].MenuId,
+            ChefId: req.body.data.cartItems[i].ChefId
         }
         ordersArray.push(resObj);
     }
