@@ -3,7 +3,7 @@ let router = express.Router();
 var db = require("../models");
 const bcrypt = require('bcrypt');
 var NodeGeocoder = require('node-geocoder');
-
+const notify = require("../../OlafAPI/utils/sms_mail_client")
 var options = {
     provider: 'google',
     httpAdapter: 'https',

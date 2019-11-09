@@ -18,8 +18,7 @@ app.use(express.json());
 var routes = require("./controllers");
 
 app.use(cors({
-  origin:"https://olafui.herokuapp.com",
-  // origin:"http://localhost:3000",
+  origin:"http://localhost:3000",
   credentials:true
 }));
 
@@ -29,7 +28,7 @@ app.use('/',routes);
 // Static directory
 app.use(express.static(__dirname + '/public'));
 
-db.sequelize.sync({ force:false}).then(function() {
+db.sequelize.sync({ force: false}).then(function() {
     app.listen(PORT, function() {
       console.log("App listening on PORT " + PORT);
     });
