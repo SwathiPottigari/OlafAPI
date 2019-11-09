@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 module.exports = function sendMsg(customerInfo) {
+    console.log("Called Twilio");
     const twilio = require('twilio');
     return new Promise ((resolve,reject)=>{
         var accountSid = process.env.TWILIO_SID; // Your Account SID from www.twilio.com/console
