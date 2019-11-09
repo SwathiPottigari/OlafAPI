@@ -3,6 +3,7 @@ let router = express.Router();
 var db = require("../models");
 const bcrypt = require('bcrypt');
 var NodeGeocoder = require('node-geocoder');
+let twilio=require('../utils/sms_mail_client');
 
 var options = {
     provider: 'google',
@@ -107,10 +108,18 @@ router.post("/api/createMenu", function (req, res) {
 });
 
 router.post("/api/order", function (req, res) {
-    console.log("-------Request--------");
-    console.log(req.body);
+    // console.log("-------Request--------");
+    // console.log(req.body);
     let ordersArray = [];
-    
+    let customerObj=[];
+    let orders=[];
+    for(let i = 0; i < req.body.data.cartItems.length; i++){
+        let obj={
+            dish:req.body.data.cartItems[i].dish,
+            orderedQuantity: req.body.data.cartItems[i].orderedQuantity
+        }
+        orders.push(obj);
+    }
     for (let i = 0; i < req.body.data.cartItems.length; i++) {
         let resObj = {
             orderedQuantity: req.body.data.cartItems[i].orderedQuantity,
@@ -122,6 +131,20 @@ router.post("/api/order", function (req, res) {
     }
     db.Order.bulkCreate(ordersArray).then(function (response) {
         console.log("Done");
+        db.Customer.findOne({
+            where:{
+                id:req.body.data.cartItems[0].CustomerId
+            }
+        }).then(function(results){
+            customerObj.push({user:"customer"});
+            customerObj.push({Customer:results.dataValues});
+            customerObj.push({Orders:orders});
+            customerObj.push({TotalCost:req.body.data.totalCost});            
+            let test=twilio;
+            test(customerObj);
+            // twilio.sendMessageCustomer(customerObj).then(function(){
+            
+        }).catch(function(error){console.log(error)})
         res.json(response);
     }).catch(function (error) {
         console.log(error);
