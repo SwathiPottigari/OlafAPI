@@ -138,12 +138,20 @@ router.post("/api/order", function (req, res) {
                 id:req.body.data.cartItems[0].CustomerId
             }
         }).then(function(results){
-            customerObj.push({user:"customer"});
             customerObj.push({Customer:results.dataValues});
-            customerObj.push({Orders:orders});
-            customerObj.push({TotalCost:req.body.data.totalCost});            
-            let test=twilio;
-            test(customerObj);
+            db.Chef.findOne({
+                where:{
+                    id:req.body.data.cartItems[0].ChefId
+                }
+            }).then(function(chefDetails){
+                customerObj.push({Chef:chefDetails.dataValues});
+                customerObj.push({Orders:orders});
+                customerObj.push({TotalCost:req.body.data.totalCost});
+                console.log(customerObj);           
+                let test=twilio;
+                test(customerObj);
+            }).catch();
+            
             // twilio.sendMessageCustomer(customerObj).then(function(){
             
         }).catch(function(error){console.log(error)})
