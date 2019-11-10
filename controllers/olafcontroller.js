@@ -4,6 +4,8 @@ var db = require("../models");
 const bcrypt = require('bcrypt');
 var NodeGeocoder = require('node-geocoder');
 const moment=require("moment");
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
 let notify = require('../utils/sms_mail_client');
 
@@ -189,7 +191,10 @@ router.get("/api/menuList/:chefId", function (req, res) {
     console.log(date);
     db.Menu.findAll({
         where: {
-            ChefId: req.params.chefId
+            ChefId: req.params.chefId,
+            quantity:{
+                [Op.gt]: 0
+            }
         }
     }).then(function (menuResult) {
         let menuList = [];
