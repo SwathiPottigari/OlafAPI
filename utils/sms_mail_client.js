@@ -22,7 +22,7 @@ function sendMessageCustomer(customerInfo){
                 body: msgStr,
                 to: customerInfo[0].Customer.contact,
                 from: process.env.TWILIO_PHONENUMBER
-            })
+            }).then(message=>console.log(message.sid)).catch(error=>console.log(error));
             resolve(notifyMsg)
     })
 }
@@ -45,7 +45,7 @@ function sendMessageChef(customerInfo){
                 body: msgStr,
                 to: customerInfo[0].Customer.contact,
                 from: process.env.TWILIO_PHONENUMBER
-            })
+            }).then(message=>console.log(message.sid)).catch(error=>console.log(error));
             resolve(notifyMsg)
     })
 }
