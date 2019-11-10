@@ -4,7 +4,7 @@ var db = require("../models");
 const bcrypt = require('bcrypt');
 var NodeGeocoder = require('node-geocoder');
 
-let twilio=require('../utils/sms_mail_client');
+let notify = require('../utils/sms_mail_client');
 
 
 var options = {
@@ -146,9 +146,8 @@ router.post("/api/order", function (req, res) {
             }).then(function(chefDetails){
                 customerObj.push({Chef:chefDetails.dataValues});
                 customerObj.push({Orders:orders});
-                customerObj.push({TotalCost:req.body.data.totalCost});
-                console.log(customerObj);           
-                let test=twilio;
+                customerObj.push({TotalCost:req.body.data.totalCost});          
+                let test=notify;
                 test(customerObj);
             }).catch();
             
