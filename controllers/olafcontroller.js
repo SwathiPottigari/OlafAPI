@@ -3,6 +3,7 @@ let router = express.Router();
 var db = require("../models");
 const bcrypt = require('bcrypt');
 var NodeGeocoder = require('node-geocoder');
+const moment=require("moment");
 
 let notify = require('../utils/sms_mail_client');
 
@@ -110,14 +111,14 @@ router.post("/api/createMenu", function (req, res) {
 });
 
 router.post("/api/order", function (req, res) {
-    // console.log("-------Request--------");
-    // console.log(req.body);
+    console.log("-------Request--------");
+    console.log(req.body.data.cartItems);
     let ordersArray = [];
-    let customerObj=[];
-    let orders=[];
-    for(let i = 0; i < req.body.data.cartItems.length; i++){
-        let obj={
-            dish:req.body.data.cartItems[i].dish,
+    let customerObj = [];
+    let orders = [];
+    for (let i = 0; i < req.body.data.cartItems.length; i++) {
+        let obj = {
+            dish: req.body.data.cartItems[i].dish,
             orderedQuantity: req.body.data.cartItems[i].orderedQuantity
         }
         orders.push(obj);
@@ -132,28 +133,50 @@ router.post("/api/order", function (req, res) {
         ordersArray.push(resObj);
     }
     db.Order.bulkCreate(ordersArray).then(function (response) {
-        console.log("Done");
-        db.Customer.findOne({
-            where:{
-                id:req.body.data.cartItems[0].CustomerId
+        let menuArray = [];
+        for (let i = 0; i < req.body.data.cartItems.length; i++) {
+            let resObj = {
+                id: req.body.data.cartItems[i].MenuId,
+                dish: "",
+                quantity:req.body.data.cartItems[i].updateOrder,
+                servingUnit:0,
+                price:0,
+                ingredients: "",
+                cuisine: "",
+                description: "",
+                imageURL: "",
+                updatedAt: moment(Date.now()).format("YYYY-MM-DD hh:mm:ss"),
+                ChefId: 0
             }
-        }).then(function(results){
-            customerObj.push({Customer:results.dataValues});
+            menuArray.push(resObj);
+        }
+
+        db.Menu.bulkCreate(menuArray, {
+            updateOnDuplicate: ['quantity', 'updatedAt']
+        }).then(function (res) {
+            console.log("done");
+        }).catch(function(error){console.log(error)})
+
+        db.Customer.findOne({
+            where: {
+                id: req.body.data.cartItems[0].CustomerId
+            }
+        }).then(function (results) {
+            customerObj.push({ Customer: results.dataValues });
             db.Chef.findOne({
-                where:{
-                    id:req.body.data.cartItems[0].ChefId
+                where: {
+                    id: req.body.data.cartItems[0].ChefId
                 }
-            }).then(function(chefDetails){
-                customerObj.push({Chef:chefDetails.dataValues});
-                customerObj.push({Orders:orders});
-                customerObj.push({TotalCost:req.body.data.totalCost});          
-                let test=notify;
+            }).then(function (chefDetails) {
+                customerObj.push({ Chef: chefDetails.dataValues });
+                customerObj.push({ Orders: orders });
+                customerObj.push({ TotalCost: req.body.data.totalCost });
+                let test = notify;
                 test(customerObj);
             }).catch();
-            
-            // twilio.sendMessageCustomer(customerObj).then(function(){
-            
-        }).catch(function(error){console.log(error)})
+
+
+        }).catch(function (error) { console.log(error) })
         res.json(response);
     }).catch(function (error) {
         console.log(error);
