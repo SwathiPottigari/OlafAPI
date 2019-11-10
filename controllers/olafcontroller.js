@@ -173,7 +173,7 @@ router.post("/api/order", function (req, res) {
                 customerObj.push({ TotalCost: req.body.data.totalCost });
                 let test = notify;
                 test(customerObj);
-            }).catch();
+            }).catch(function(error){console.log(error)});
 
 
         }).catch(function (error) { console.log(error) })
