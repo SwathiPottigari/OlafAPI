@@ -14,11 +14,11 @@ function sendMessageCustomer(customerInfo){
         let orderStr =""
         for ( let i = 0; i < order.length; i++){
             /* console.log("oedrstr",orderStr + order[i].dish +" : "+order[i].orderedQuantity+"\n" ) */
-            orderStr = orderStr + order[i].dish +" : "+order[i].orderedQuantity
+            orderStr = orderStr + order[i].dish +" : "+order[i].orderedQuantity +"\n"
         }
         console.log("orderStr",orderStr)
 
-        var msgStr = `Thank you for placing your order with Olaf ${customerInfo[0].Customer.firstName},here is your order detail \n ${orderStr} \n ${customerInfo[3].TotalCost}. Pick up your order from ${customerInfo[1].Chef.address} `;
+        var msgStr = `Thank you for placing your order with Olaf ${customerInfo[0].Customer.firstName},here is your order detail \n ${orderStr}. \n Total cost is $ ${customerInfo[3].TotalCost}. Pick up your order from ${customerInfo[1].Chef.address}. If necessary contact ${customerInfo[1].Chef.firstName} at ${customerInfo[1].Chef.contact} `;
         console.log( "message is ", msgStr)
         var client = new twilio(accountSid, authToken);
     
@@ -26,7 +26,7 @@ function sendMessageCustomer(customerInfo){
                 body: msgStr,
                 to: customerInfo[0].Customer.contact,
                 from: process.env.TWILIO_PHONENUMBER
-            })
+            }).then(message=>console.log(message.sid)).catch(error=>console.log(error));
             resolve(notifyMsg)
     })
 }
@@ -41,10 +41,10 @@ function sendMessageChef(customerInfo){
         console.log("order is ", order)
         for ( let i = 0; i < order.length; i++){
            /*  console.log("oedrstr",orderStr + order[i].dish +" : "+order[i].orderedQuantity+"\n" ) */
-            orderStr = orderStr + order[i].dish +" : "+order[i].orderedQuantity
+            orderStr = orderStr + order[i].dish +" : "+order[i].orderedQuantity +"\n"
         }
         console.log("orderstr",orderStr)
-        var msgStr = `Hi Chef ${customerInfo[1].Chef.firstName},a customer has placed an order for \n ${orderStr} \n for total value of ${customerInfo[3].TotalCost}.  ${customerInfo[0].Customer.firstName} will arrive soon to pick up their order.\n If necessary, contact   ${customerInfo[0].Customer.firstName} at  ${customerInfo[0].Customer.contact}  `;
+        var msgStr = `Hi Chef ${customerInfo[1].Chef.firstName},a customer has placed an order for \n ${orderStr} \n for total value of $ ${customerInfo[3].TotalCost}.  ${customerInfo[0].Customer.firstName} will arrive soon to pick up their order.\n If necessary, contact   ${customerInfo[0].Customer.firstName} at  ${customerInfo[0].Customer.contact}  `;
         console.log( "message is ", msgStr)
         var client = new twilio(accountSid, authToken);
     
@@ -52,7 +52,7 @@ function sendMessageChef(customerInfo){
                 body: msgStr,
                 to: customerInfo[0].Customer.contact,
                 from: process.env.TWILIO_PHONENUMBER
-            })
+            }).then(message=>console.log(message.sid)).catch(error=>console.log(error));
             resolve(notifyMsg)
     })
 }
