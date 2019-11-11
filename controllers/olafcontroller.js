@@ -115,11 +115,16 @@ router.post("/api/order", function (req, res) {
     let ordersArray = [];
     let customerObj=[];
     let orders=[];
+    console.log("cart",req.body.data.cartItems)
+    let obj = {dish:"",orderedQuantity:null};
     for(let i = 0; i < req.body.data.cartItems.length; i++){
-        let obj={
+        /* let obj={
             dish:req.body.data.cartItems[i].dish,
             orderedQuantity: req.body.data.cartItems[i].orderedQuantity
-        }
+        } */
+        obj.dish = req.body.data.cartItems[i].dish
+        obj.orderedQuantity = req.body.data.cartItems[i].orderedQuantity
+        console.log ("object is ", obj)
         orders.push(obj);
     }
     for (let i = 0; i < req.body.data.cartItems.length; i++) {
