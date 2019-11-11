@@ -86,29 +86,35 @@ router.post("/api/login", function (req, res) {
 });
 
 router.post("/api/createMenu", function (req, res) {
-    console.log("-------Request--------");
-    console.log(req.body);
-    db.Menu.create({
-        dish: req.body.dish,
-        quantity: req.body.quantity,
-        servingUnit: req.body.servingUnit,
-        price: req.body.price,
-        ingredients: req.body.ingredients,
-        cuisine: req.body.cuisine,
-        ChefId: req.body.ChefId,
-        description: req.body.description,
-        imageURL: req.body.imageURL
-    }).then(function (menuResult) {
-        db.History.create({
+   
+    db.Chef.findOne({
+        where:{
+            UserId:req.body.UserId
+        }
+    }).then(function (results) {
+       
+        db.Menu.create({
             dish: req.body.dish,
+            quantity: req.body.quantity,
+            servingUnit: req.body.servingUnit,
+            price: req.body.price,
             ingredients: req.body.ingredients,
             cuisine: req.body.cuisine,
-            ChefId: req.body.ChefId
-        }).then(function (result) {
-
-        }).catch();
-        res.json(menuResult);
-    }).catch(function (error) { res.json(error) });
+            ChefId: results.dataValues.id,
+            description: req.body.description,
+            imageURL: req.body.imageURL
+        }).then(function (menuResult) {
+            db.History.create({
+                dish: req.body.dish,
+                ingredients: req.body.ingredients,
+                cuisine: req.body.cuisine,
+                ChefId: results.dataValues.id
+            }).then(function (resultHistory) {
+    
+            }).catch();
+            res.json(menuResult);
+        }).catch(function (error) { res.json(error) });
+    }).catch();    
 
 });
 
@@ -186,26 +192,33 @@ router.post("/api/order", function (req, res) {
 });
 
 router.get("/api/menuList/:chefId", function (req, res) {
-    let today = new Date();
-    let date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-    console.log(date);
-    db.Menu.findAll({
-        where: {
-            ChefId: req.params.chefId,
-            quantity:{
-                [Op.gt]: 0
-            }
+    // let today = new Date();
+    // let date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+    // console.log(date);
+    db.Chef.findOne({
+        where:{
+            UserId:req.params.chefId
         }
-    }).then(function (menuResult) {
-        let menuList = [];
-
-        menuResult.forEach(element => {
-            menuList.push(element.dataValues);
+    }).then(function(results){
+        db.Menu.findAll({
+            where: {
+                ChefId: results.dataValues.id,
+                quantity:{
+                    [Op.gt]: 0
+                }
+            }
+        }).then(function (menuResult) {
+            let menuList = [];
+    
+            menuResult.forEach(element => {
+                menuList.push(element.dataValues);
+            });
+            res.json(menuList);
+        }).catch(function (error) {
+            res.json(error);
         });
-        res.json(menuList);
-    }).catch(function (error) {
-        res.json(error);
-    });
+    }).catch();
+    
 });
 
 router.get("/api/onlineChefs", function (req, res) {
@@ -252,8 +265,13 @@ router.get("/api/user/:userId/:user", function (req, res) {
 )
 
 
-router.get("/api/Chefs", function (req, res) {
-    db.Chef.findAll().then(function (results) {
+router.get("/api/chef/:id", function (req, res) {
+    db.Chef.findOne({
+        where:{
+            UserId:req.params.id
+        }
+    }).then(function (results) {
+        console.log("Chef details");
         res.json(results);
     }).catch();
 });
