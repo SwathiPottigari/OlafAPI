@@ -18,7 +18,7 @@ function sendMessageCustomer(customerInfo){
         }
         console.log("orderStr",orderStr)
 
-        var msgStr = `Thank you for placing your order with Olaf ${customerInfo[0].Customer.firstName},here is your order detail \n ${orderStr}. \n Total cost is $ ${customerInfo[3].TotalCost}. Pick up your order from ${customerInfo[1].Chef.address}. If necessary contact ${customerInfo[1].Chef.firstName} at ${customerInfo[1].Chef.contact} `;
+        var msgStr = `Hello ${customerInfo[0].Customer.firstName}! Thank you for placing your order with Olaf. Here is your order detail\n${orderStr}\n Your total cost is $${customerInfo[3].TotalCost}. Your order will be available for pickup at:\n${customerInfo[1].Chef.address}\nShould the need arise, you can contact Chef ${customerInfo[1].Chef.firstName} at ${customerInfo[1].Chef.contact}`;
         console.log( "message is ", msgStr)
         var client = new twilio(accountSid, authToken);
     
@@ -44,7 +44,7 @@ function sendMessageChef(customerInfo){
             orderStr = orderStr + order[i].dish +" : "+order[i].orderedQuantity +"\n"
         }
         console.log("orderstr",orderStr)
-        var msgStr = `Hi Chef ${customerInfo[1].Chef.firstName},a customer has placed an order for \n ${orderStr} \n for total value of $ ${customerInfo[3].TotalCost}.  ${customerInfo[0].Customer.firstName} will arrive soon to pick up their order.\n If necessary, contact   ${customerInfo[0].Customer.firstName} at  ${customerInfo[0].Customer.contact}  `;
+        var msgStr = `Hello Chef ${customerInfo[1].Chef.firstName}! A customer has placed an order for\n${orderStr}\nat a $${customerInfo[3].TotalCost} total. Your customer will arrive soon to pick up their order.\nShould the need arise, contact ${customerInfo[0].Customer.firstName} at ${customerInfo[0].Customer.contact}`;
         console.log( "message is ", msgStr)
         var client = new twilio(accountSid, authToken);
     
