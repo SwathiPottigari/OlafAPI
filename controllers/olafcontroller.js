@@ -263,7 +263,7 @@ router.get("/api/onlineChefs", function (req, res) {
 router.get("/api/onlineChef/:id", function (req, res) {
     db.Chef.findOne({
         where:{
-            ChefId:req.params.id
+            UserId:req.params.id
         }
     }).then(function(results){
         db.OnlineChef.findAll({
