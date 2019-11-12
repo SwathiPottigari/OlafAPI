@@ -21,7 +21,6 @@ app.use(cors({
 
   origin:"https://olafui.herokuapp.com",
   //origin:"http://localhost:3000",
-
   credentials:true
 }));
 
