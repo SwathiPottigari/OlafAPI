@@ -6,7 +6,7 @@ var apiRoutes=require('./olafcontroller');
 router.use(apiRoutes);
 
 router.get("/",function(req,res){
-    res.send("Welcome");
+    res.send("Welcome to heroku");
 });
 
 module.exports = router;
