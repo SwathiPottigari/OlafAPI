@@ -226,6 +226,32 @@ router.get("/api/menuList/:chefId", function (req, res) {
     
 });
 
+router.get("/api/menuListMap/:chefId", function (req, res) {
+    // let today = new Date();
+    // let date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+    // console.log(date);
+   
+        db.Menu.findAll({
+            where: {
+                ChefId: req.params.chefId,
+                quantity:{
+                    [Op.gt]: 0
+                }
+            }
+        }).then(function (menuResult) {
+            let menuList = [];
+    
+            menuResult.forEach(element => {
+                menuList.push(element.dataValues);
+            });
+            res.json(menuList);
+        }).catch(function (error) {
+            res.json(error);
+        });
+    
+    
+});
+
 router.get("/api/onlineChefs", function (req, res) {
     db.OnlineChef.findAll({
         include: [db.Chef]
@@ -235,13 +261,20 @@ router.get("/api/onlineChefs", function (req, res) {
 });
 
 router.get("/api/onlineChef/:id", function (req, res) {
-    db.OnlineChef.findAll({
-        where: {
-            ChefId: req.params.id
+    db.Chef.findOne({
+        where:{
+            UserId:req.params.id
         }
-    }).then(function (results) {
-        res.json(results);
+    }).then(function(results){
+        db.OnlineChef.findAll({
+            where: {
+                ChefId: results.dataValues.id
+            }
+        }).then(function (results) {
+            res.json(results);
+        }).catch();
     }).catch();
+  
 });
 
 
@@ -282,21 +315,35 @@ router.get("/api/chef/:id", function (req, res) {
 });
 
 router.post("/api/makeAvailable/:chefId", function (req, res) {
-    db.OnlineChef.create({
-        ChefId: req.params.chefId
-    }).then(function (result) {
-        res.json(result);
-    }).catch(function (error) { res.json(error) });
+    db.Chef.findOne({
+        where:{
+            UserId:req.params.chefId
+        }
+    }).then(function(results){
+        db.OnlineChef.create({
+            ChefId: results.dataValues.id
+        }).then(function (result) {
+            res.json(result);
+        }).catch(function (error) { res.json(error) });
+    }).catch();
+   
 });
 
 router.delete("/api/makeUnavailable/:chefId", function (req, res) {
-    db.OnlineChef.destroy({
-        where: {
-            ChefId: req.params.chefId
+    db.Chef.findOne({
+        where:{
+            UserId:req.params.chefId
         }
-    }).then(function (result) {
-        res.json(result);
-    }).catch(function (error) { res.json(error) });
+    }).then(function(results){
+        db.OnlineChef.destroy({
+            where: {
+                ChefId: results.dataValues.id
+            }
+        }).then(function (result) {
+            res.json(result);
+        }).catch(function (error) { res.json(error) });
+    }).catch();
+    
 });
 
 router.delete("/api/removeDish/:dishId", function (req, res) {
