@@ -50,7 +50,7 @@ function sendMessageChef(customerInfo){
     
             var notifyMsg = client.messages.create({
                 body: msgStr,
-                to: customerInfo[0].Customer.contact,
+                to: customerInfo[1].Chef.contact,
                 from: process.env.TWILIO_PHONENUMBER
             }).then(message=>console.log(message.sid)).catch(error=>console.log(error));
             resolve(notifyMsg)
